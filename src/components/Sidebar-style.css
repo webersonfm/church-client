@@ -1,0 +1,84 @@
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Efeitos 3D e animações adicionais */
+.menu-item-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.menu-icon {
+  transition: transform 0.3s ease;
+}
+
+.menu-icon:hover {
+  transform: translateZ(20px) rotateY(10deg);
+}
+
+/* Efeito de brilho nos itens do menu */
+.menu-item-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item-glow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.menu-item-glow:hover::before {
+  opacity: 1;
+}
+
+/* Efeito de profundidade para submenus */
+.submenu-3d {
+  transform: translateZ(-10px);
+  transition: transform 0.3s ease;
+}
+
+.submenu-3d:hover {
+  transform: translateZ(0);
+}
