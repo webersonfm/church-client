@@ -1,7 +1,41 @@
 "use client"
 
 import { useState } from "react"
-import { FaUser, FaSave, FaTimes } from "react-icons/fa"
+import { FaUser, FaSave, FaTimes, FaArrowLeft } from "react-icons/fa"
+import InputStyle from "../../components/InputStyle"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import SelectStyle from "../../components/SelectStyle"
+import BrazilStates from "../../components/BrazilStates"
+
+const estadosBrasileiros = [
+  { value: "AC", label: "AC - Acre" },
+  { value: "AL", label: "AL - Alagoas" },
+  { value: "AP", label: "AP - Amapá" },
+  { value: "AM", label: "AM - Amazonas" },
+  { value: "BA", label: "BA - Bahia" },
+  { value: "CE", label: "CE - Ceará" },
+  { value: "DF", label: "DF - Distrito Federal" },
+  { value: "ES", label: "ES - Espírito Santo" },
+  { value: "GO", label: "GO - Goiás" },
+  { value: "MA", label: "MA - Maranhão" },
+  { value: "MT", label: "MT - Mato Grosso" },
+  { value: "MS", label: "MS - Mato Grosso do Sul" },
+  { value: "MG", label: "MG - Minas Gerais" },
+  { value: "PA", label: "PA - Pará" },
+  { value: "PB", label: "PB - Paraíba" },
+  { value: "PR", label: "PR - Paraná" },
+  { value: "PE", label: "PE - Pernambuco" },
+  { value: "PI", label: "PI - Piauí" },
+  { value: "RJ", label: "RJ - Rio de Janeiro" },
+  { value: "RN", label: "RN - Rio Grande do Norte" },
+  { value: "RS", label: "RS - Rio Grande do Sul" },
+  { value: "RO", label: "RO - Rondônia" },
+  { value: "RR", label: "RR - Roraima" },
+  { value: "SC", label: "SC - Santa Catarina" },
+  { value: "SP", label: "SP - São Paulo" },
+  { value: "SE", label: "SE - Sergipe" },
+  { value: "TO", label: "TO - Tocantins" },
+]
 
 const ClientesCadastro = () => {
   const [formData, setFormData] = useState({
@@ -16,9 +50,10 @@ const ClientesCadastro = () => {
     observacoes: "",
   })
 
-  const [foto, setFoto] = useState(null)
+  const [foto, setFoto] = useState("")
   const [previewUrl, setPreviewUrl] = useState("")
   const [success, setSuccess] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -65,12 +100,40 @@ const ClientesCadastro = () => {
     })
     setFoto(null)
     setPreviewUrl("")
+
+    // Resetar o campo de input file
+    const fileInput = document.querySelector('input[type="file"]')
+    if (fileInput) {
+      fileInput.value = ""
+    }
+  }
+
+  const handleReturn = () => {
+    setShowModal(true)
+  }
+
+  const handleConfirmReturn = () => {
+    setShowModal(false)
+    window.history.back()
+  }
+
+  const handleCancelReturn = () => {
+    setShowModal(false)
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Cadastro de Cliente</h1>
+        <button
+          onClick={handleReturn}
+          className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+          text-sm font-medium text-white bg-blue-600 hover:bg-blue-800
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <FaArrowLeft className="mr-2" />
+          Voltar
+        </button>
       </div>
 
       {success && (
@@ -84,190 +147,154 @@ const ClientesCadastro = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nome">
-                    Nome Completo *
-                  </label>
-                  <input
-                    id="nome"
-                    name="nome"
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.nome}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                    E-mail *
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefone">
-                    Telefone *
-                  </label>
-                  <input
-                    id="telefone"
-                    name="telefone"
-                    type="tel"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.telefone}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cpf">
-                    CPF *
-                  </label>
-                  <input
-                    id="cpf"
-                    name="cpf"
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.cpf}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="endereco">
-                    Endereço
-                  </label>
-                  <input
-                    id="endereco"
-                    name="endereco"
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.endereco}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cidade">
-                    Cidade
-                  </label>
-                  <input
-                    id="cidade"
-                    name="cidade"
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.cidade}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado">
-                    Estado
-                  </label>
-                  <select
-                    id="estado"
-                    name="estado"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.estado}
-                    onChange={handleChange}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="AC">Acre</option>
-                    <option value="AL">Alagoas</option>
-                    <option value="AP">Amapá</option>
-                    <option value="AM">Amazonas</option>
-                    <option value="BA">Bahia</option>
-                    <option value="CE">Ceará</option>
-                    <option value="DF">Distrito Federal</option>
-                    <option value="ES">Espírito Santo</option>
-                    <option value="GO">Goiás</option>
-                    <option value="MA">Maranhão</option>
-                    <option value="MT">Mato Grosso</option>
-                    <option value="MS">Mato Grosso do Sul</option>
-                    <option value="MG">Minas Gerais</option>
-                    <option value="PA">Pará</option>
-                    <option value="PB">Paraíba</option>
-                    <option value="PR">Paraná</option>
-                    <option value="PE">Pernambuco</option>
-                    <option value="PI">Piauí</option>
-                    <option value="RJ">Rio de Janeiro</option>
-                    <option value="RN">Rio Grande do Norte</option>
-                    <option value="RS">Rio Grande do Sul</option>
-                    <option value="RO">Rondônia</option>
-                    <option value="RR">Roraima</option>
-                    <option value="SC">Santa Catarina</option>
-                    <option value="SP">São Paulo</option>
-                    <option value="SE">Sergipe</option>
-                    <option value="TO">Tocantins</option>
-                  </select>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cep">
-                    CEP
-                  </label>
-                  <input
-                    id="cep"
-                    name="cep"
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.cep}
-                    onChange={handleChange}
-                  />
-                </div>
+                <InputStyle
+                  id="nome"
+                  name="nome"
+                  label="Nome Completo *"
+                  value={formData.nome}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="E-mail *"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="telefone"
+                  name="telefone"
+                  label="Telefone"
+                  value={formData.telefone}
+                  onChange={handleChange}
+                />
+                <InputStyle
+                  id="cpf"
+                  name="cpf"
+                  label="CPF"
+                  value={formData.cpf}
+                  onChange={handleChange}
+                />
+                <InputStyle
+                  id="endereco"
+                  name="endereco"
+                  label="Endereço"
+                  value={formData.endereco}
+                  onChange={handleChange}
+                />
+                <InputStyle
+                  id="cidade"
+                  name="cidade"
+                  label="Cidade"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                />
+                
+                <SelectStyle
+                  id="estado"
+                  name="estado"
+                  label="Estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  options={estadosBrasileiros}
+                />
+                <InputStyle
+                  id="cep"
+                  name="cep"
+                  label="CEP"
+                  value={formData.cep}
+                  onChange={handleChange}
+                />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="observacoes">
-                  Observações
-                </label>
-                <textarea
+              <div className="mt-4">
+                <InputStyle
                   id="observacoes"
                   name="observacoes"
-                  rows="3"
-                  className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  label="Observações"
                   value={formData.observacoes}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Foto</label>
-              <div className="flex flex-col items-center">
-                <div className="w-40 h-40 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                  {previewUrl ? (
-                    <img src={previewUrl || "/placeholder.svg"} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <FaUser className="h-20 w-20 text-gray-400" />
-                  )}
-                </div>
-                <input
-                  type="file"
-                  id="foto"
-                  name="foto"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFotoChange}
-                />
-                <label
-                  htmlFor="foto"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                >
-                  Selecionar Foto
+            <div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Foto
                 </label>
+                <div className="flex items-center justify-center w-full">
+                  <label className="
+                    w-64 
+                    flex flex-col 
+                    items-center 
+                    px-4 py-6 
+                    bg-gradient-to-r from-blue-500 to-blue-600
+                    rounded-xl
+                    shadow-[0_8px_16px_rgba(0,0,0,0.1)]
+                    transform hover:-translate-y-1
+                    transition-all duration-300
+                    border-4 border-white
+                    cursor-pointer
+                    group
+                  ">
+                    <div className="
+                      p-4 
+                      rounded-full 
+                      bg-white 
+                      shadow-inner 
+                      group-hover:scale-110 
+                      transition-transform duration-300
+                    ">
+                      <FaUser className="w-8 h-8 text-blue-500" />
+                    </div>
+                    <span className="
+                      mt-4 
+                      text-base 
+                      font-semibold 
+                      text-white 
+                      group-hover:text-blue-100
+                      transition-colors duration-300
+                    ">
+                      {foto ? foto.name : "Selecionar Foto"}
+                    </span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={handleFotoChange}
+                      accept="image/*"
+                    />
+                  </label>
+                </div>
+                {previewUrl && (
+                  <div className="mt-4 relative group">
+                    <div className="
+                      absolute 
+                      inset-0 
+                      rounded-xl 
+                      bg-gradient-to-r from-blue-500/20 to-blue-600/20 
+                      opacity-0 
+                      group-hover:opacity-100 
+                      transition-opacity duration-300
+                    "></div>
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="
+                        w-full 
+                        h-auto 
+                        rounded-xl 
+                        shadow-lg 
+                        transform 
+                        transition-all duration-300 
+                        group-hover:scale-[1.02]
+                      "
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -276,19 +303,32 @@ const ClientesCadastro = () => {
             <button
               type="button"
               onClick={handleReset}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded flex items-center"
+              className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+              text-sm font-medium text-white bg-red-500 hover:bg-red-700 
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <FaTimes className="mr-2" /> Limpar
+              <FaTimes className="mr-2" />
+              Limpar
             </button>
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              className="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <FaSave className="mr-2" /> Salvar
+              <FaSave className="mr-2" />
+              Salvar
             </button>
           </div>
         </form>
       </div>
+
+      <ConfirmationModal
+        isOpen={showModal}
+        onClose={handleCancelReturn}
+        onConfirm={handleConfirmReturn}
+        title="Confirmar Retorno"
+        message="Deseja cancelar inclusão?"
+      />
+
     </div>
   )
 }

@@ -2,25 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { FaEdit, FaTrash, FaSearch, FaUserPlus, FaSync } from "react-icons/fa"
+import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 import { Link } from "react-router-dom"
 import axios from "axios"
 import ConfirmationModal from "../../components/ConfirmationModal"
 import API_CONFIG from "../../config/api"
-
-
-// Dados de exemplo
-const clientesExemplo = [
-    {
-        codigo: 12,
-        cnpj_rg: "02843364167",
-        razao_social: "JOSE DANIEL BENICIO",
-        nome_fantasia: "JATOBÁ",
-        insc_est: null,
-        cidade: null,
-        uf: null,
-        fone_1: "62993313255",
-    },
-]
+import { cpf, cnpj } from "../../components/Functions"  // Adicione esta importação
 
 const ClientesLista = () => {
     const [clientes, setClientes] = useState([])
@@ -123,19 +110,37 @@ const ClientesLista = () => {
     }
 
     function cpf(v) {
-        v = v.replace(/\D/g, "")                    // Remove tudo o que não é dígito
-        v = v.replace(/(\d{3})(\d)/, "$1.$2")       // Coloca um ponto entre o terceiro e o quarto dígitos
+        // Remove tudo o que não é dígito
+        v = v.replace(/\D/g, "")         
+        
+        // Coloca um ponto entre o terceiro e o quarto dígitos
+        v = v.replace(/(\d{3})(\d)/, "$1.$2")       
+
+        // Coloca um ponto entre o sexto e o sétimo dígitos
         v = v.replace(/(\d{3})(\d)/, "$1.$2")       // Coloca um ponto entre o sexto e o sétimo dígitos
-        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2") // Coloca um hífen entre o nono e o décimo dígitos
+
+        // Coloca um hífen entre o nono e o décimo dígitos
+        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2") 
+
         return v
     }
 
     function cnpj(v) {
-        v = v.replace(/\D/g, "")                           // Remove tudo o que não é dígito
-        v = v.replace(/^(\d{2})(\d)/, "$1.$2")             // Coloca ponto entre o segundo e o terceiro dígitos
-        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Coloca ponto entre o quinto e o sexto dígitos
-        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2")           // Coloca uma barra entre o oitavo e o nono dígitos
-        v = v.replace(/(\d{4})(\d)/, "$1-$2")              // Coloca um hífen depois do bloco de quatro dígitos
+        // Remove tudo o que não é dígito
+        v = v.replace(/\D/g, "")                           
+
+        // Coloca ponto entre o segundo e o terceiro dígitos
+        v = v.replace(/^(\d{2})(\d)/, "$1.$2")             
+        
+        // Coloca ponto entre o quinto e o sexto dígitos
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") 
+        
+        // Coloca uma barra entre o oitavo e o nono dígitos
+        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2")           
+
+        // Coloca um hífen depois do bloco de quatro dígitos
+        v = v.replace(/(\d{4})(\d)/, "$1-$2")              
+        
         return v
     }
 
@@ -171,7 +176,7 @@ const ClientesLista = () => {
 
                     <Link
                         to="/clientes/cadastro"
-                        className="bg-blue-600 hover:bg-blue-700 text-white 
+                        className="bg-green-500 hover:bg-green-500 hover:text-white text-black 
                                                 font-bold py-2 px-4 rounded flex items-center justify-center"
                         style={{
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -264,9 +269,13 @@ const ClientesLista = () => {
 
             <div className="flex justify-center mt-4">
                 <button
-                    className="px-4 py-2 mx-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 mx-5 bg-blue-600 text-white rounded hover:bg-blue-700"
                     onClick={() => handlePaginaChange(paginaAtual - 1)}
                     disabled={paginaAtual === 1}
+                    style={{
+                        background: 'linear-gradient(145deg, #3b82f6, #2563eb)',
+                        boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.1)'
+                    }}
                 >
                     Anterior
                 </button>
@@ -274,6 +283,10 @@ const ClientesLista = () => {
                     className="px-4 py-2 mx-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                     onClick={() => handlePaginaChange(paginaAtual + 1)}
                     disabled={clientesFiltrados.length <= paginaAtual * registrosPorPagina}
+                    style={{
+                        background: 'linear-gradient(145deg, #3b82f6, #2563eb)',
+                        boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.1)'
+                    }}
                 >
                     Próximo
                 </button>
