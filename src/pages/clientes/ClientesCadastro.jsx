@@ -4,50 +4,23 @@ import { useState } from "react"
 import { FaUser, FaSave, FaTimes, FaArrowLeft } from "react-icons/fa"
 import InputStyle from "../../components/InputStyle"
 import ConfirmationModal from "../../components/ConfirmationModal"
-import SelectStyle from "../../components/SelectStyle"
 import BrazilStates from "../../components/BrazilStates"
-
-const estadosBrasileiros = [
-  { value: "AC", label: "AC - Acre" },
-  { value: "AL", label: "AL - Alagoas" },
-  { value: "AP", label: "AP - Amapá" },
-  { value: "AM", label: "AM - Amazonas" },
-  { value: "BA", label: "BA - Bahia" },
-  { value: "CE", label: "CE - Ceará" },
-  { value: "DF", label: "DF - Distrito Federal" },
-  { value: "ES", label: "ES - Espírito Santo" },
-  { value: "GO", label: "GO - Goiás" },
-  { value: "MA", label: "MA - Maranhão" },
-  { value: "MT", label: "MT - Mato Grosso" },
-  { value: "MS", label: "MS - Mato Grosso do Sul" },
-  { value: "MG", label: "MG - Minas Gerais" },
-  { value: "PA", label: "PA - Pará" },
-  { value: "PB", label: "PB - Paraíba" },
-  { value: "PR", label: "PR - Paraná" },
-  { value: "PE", label: "PE - Pernambuco" },
-  { value: "PI", label: "PI - Piauí" },
-  { value: "RJ", label: "RJ - Rio de Janeiro" },
-  { value: "RN", label: "RN - Rio Grande do Norte" },
-  { value: "RS", label: "RS - Rio Grande do Sul" },
-  { value: "RO", label: "RO - Rondônia" },
-  { value: "RR", label: "RR - Roraima" },
-  { value: "SC", label: "SC - Santa Catarina" },
-  { value: "SP", label: "SP - São Paulo" },
-  { value: "SE", label: "SE - Sergipe" },
-  { value: "TO", label: "TO - Tocantins" },
-]
+import { cpf, buscaCEP } from "../../components/Functions"
 
 const ClientesCadastro = () => {
   const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
     cpf: "",
+    dataNascimento: "",
+    nome: "",
+    cep: "",
     endereco: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
     cidade: "",
     estado: "",
-    cep: "",
-    observacoes: "",
+    telefone: "",
+    observacoes: ""
   })
 
   const [foto, setFoto] = useState("")
@@ -55,12 +28,82 @@ const ClientesCadastro = () => {
   const [success, setSuccess] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
-  const handleChange = (e) => {
+  const buscarNome = async (cpf, dataNascimento) => {
+    try {
+      // Remove caracteres não numéricos do CPF
+      const cpfLimpo = cpf.replace(/\D/g, '')
+      
+      const response = await fetch(`http://api.portaldatransparencia.gov.br/api-de-dados/cpf/${cpfLimpo}`, {
+        method: 'GET',
+        headers: {
+          'chave-api-dados': 'c660ba33832f086d9809d47e4bc2ce26',
+          'Accept': 'application/json'
+        }
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar dados: ${response.status}`)
+      }
+
+      const data = await response.json()
+      if (data && data.nome) {
+        setFormData(prev => ({
+          ...prev,
+          nome: data.nome
+        }))
+      }
+    } catch (error) {
+      console.error('Erro ao buscar nome:', error)
+    }
+  }
+
+  const handleChange = async (e) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
+    let formattedValue = value
+
+    if (name === 'cpf') {
+      formattedValue = cpf(value)
+      if (formattedValue === 'CPF inválido') {
+        console.error('CPF inválido')
+        return
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue
+    }))
+
+    // Verifica se tanto CPF quanto data de nascimento estão preenchidos
+    if ((name === 'cpf' || name === 'dataNascimento') && 
+        formData.cpf && formData.dataNascimento) {
+      const cpfValue = name === 'cpf' ? formattedValue : formData.cpf
+      const dataValue = name === 'dataNascimento' ? formattedValue : formData.dataNascimento
+      await buscarNome(cpfValue, dataValue)
+    }
+
+    if (name === 'cep') {
+      const cepLimpo = value.replace(/\D/g, '')
+      if (cepLimpo.length === 8) {
+        const endereco = await buscaCEP(cepLimpo)
+        if (endereco) {
+          setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            endereco: endereco.endereco,
+            bairro: endereco.bairro,
+            cidade: endereco.cidade,
+            estado: endereco.estado
+          }))
+          return
+        }
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue
+    }))
   }
 
   const handleFotoChange = (e) => {
@@ -137,16 +180,34 @@ const ClientesCadastro = () => {
       </div>
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className="bg-green-100 border border-green-400 text-green-700 
+        px-4 py-3 rounded mb-4">
           Cliente cadastrado com sucesso!
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-slate-300 rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputStyle
+                  id="cpf"
+                  name="cpf"
+                  label="CPF *"
+                  value={formData.cpf}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="dataNascimento"
+                  name="dataNascimento"
+                  type="date"
+                  label="Data de Nascimento *"
+                  value={formData.dataNascimento}
+                  onChange={handleChange}
+                  required
+                />
                 <InputStyle
                   id="nome"
                   name="nome"
@@ -154,69 +215,78 @@ const ClientesCadastro = () => {
                   value={formData.nome}
                   onChange={handleChange}
                   required
+                  className="md:col-span-2"
                 />
                 <InputStyle
-                  id="email"
-                  name="email"
-                  type="email"
-                  label="E-mail *"
-                  value={formData.email}
+                  id="cep"
+                  name="cep"
+                  label="CEP *"
+                  value={formData.cep}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="endereco"
+                  name="endereco"
+                  label="Endereço *"
+                  value={formData.endereco}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="numero"
+                  name="numero"
+                  label="Número *"
+                  value={formData.numero}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="complemento"
+                  name="complemento"
+                  label="Complemento"
+                  value={formData.complemento}
+                  onChange={handleChange}
+                />
+                <InputStyle
+                  id="bairro"
+                  name="bairro"
+                  label="Bairro *"
+                  value={formData.bairro}
+                  onChange={handleChange}
+                  required
+                />
+                <InputStyle
+                  id="cidade"
+                  name="cidade"
+                  label="Cidade *"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                  required
+                />
+                <BrazilStates
+                  id="estado"
+                  name="estado"
+                  label="Estado *"
+                  value={formData.estado}
                   onChange={handleChange}
                   required
                 />
                 <InputStyle
                   id="telefone"
                   name="telefone"
-                  label="Telefone"
+                  label="Telefone *"
                   value={formData.telefone}
                   onChange={handleChange}
+                  required
                 />
-                <InputStyle
-                  id="cpf"
-                  name="cpf"
-                  label="CPF"
-                  value={formData.cpf}
-                  onChange={handleChange}
-                />
-                <InputStyle
-                  id="endereco"
-                  name="endereco"
-                  label="Endereço"
-                  value={formData.endereco}
-                  onChange={handleChange}
-                />
-                <InputStyle
-                  id="cidade"
-                  name="cidade"
-                  label="Cidade"
-                  value={formData.cidade}
-                  onChange={handleChange}
-                />
-                
-                <SelectStyle
-                  id="estado"
-                  name="estado"
-                  label="Estado"
-                  value={formData.estado}
-                  onChange={handleChange}
-                  options={estadosBrasileiros}
-                />
-                <InputStyle
-                  id="cep"
-                  name="cep"
-                  label="CEP"
-                  value={formData.cep}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="mt-4">
                 <InputStyle
                   id="observacoes"
                   name="observacoes"
                   label="Observações"
                   value={formData.observacoes}
                   onChange={handleChange}
+                  className="md:col-span-2"
                 />
               </div>
             </div>

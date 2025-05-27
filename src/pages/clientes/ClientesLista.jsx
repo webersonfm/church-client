@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { FaEdit, FaTrash, FaSearch, FaUserPlus, FaSync } from "react-icons/fa"
-import { GoArrowLeft, GoArrowRight } from "react-icons/go"
+// import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 import { Link } from "react-router-dom"
 import axios from "axios"
 import ConfirmationModal from "../../components/ConfirmationModal"
@@ -73,10 +73,9 @@ const ClientesLista = () => {
         paginaAtual * registrosPorPagina,
     )
 
-    const handleDelete = async (codigo, razaoSocial) => {
-        setClienteParaExcluir(codigo)
+    const handleDelete = async (codigo, nome) => {
+        setClienteParaExcluir({ codigo, nome })
         setModalOpen(true)
-        setClienteParaExcluir({ codigo, razaoSocial })
     }
 
     const confirmarExclusao = async () => {
@@ -109,40 +108,40 @@ const ClientesLista = () => {
         }
     }
 
-    function cpf(v) {
-        // Remove tudo o que não é dígito
-        v = v.replace(/\D/g, "")         
-        
-        // Coloca um ponto entre o terceiro e o quarto dígitos
-        v = v.replace(/(\d{3})(\d)/, "$1.$2")       
+    // function cpf(v) {
+    //     // Remove tudo o que não é dígito
+    //     v = v.replace(/\D/g, "")         
 
-        // Coloca um ponto entre o sexto e o sétimo dígitos
-        v = v.replace(/(\d{3})(\d)/, "$1.$2")       // Coloca um ponto entre o sexto e o sétimo dígitos
+    //     // Coloca um ponto entre o terceiro e o quarto dígitos
+    //     v = v.replace(/(\d{3})(\d)/, "$1.$2")       
 
-        // Coloca um hífen entre o nono e o décimo dígitos
-        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2") 
+    //     // Coloca um ponto entre o sexto e o sétimo dígitos
+    //     v = v.replace(/(\d{3})(\d)/, "$1.$2")       // Coloca um ponto entre o sexto e o sétimo dígitos
 
-        return v
-    }
+    //     // Coloca um hífen entre o nono e o décimo dígitos
+    //     v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2") 
 
-    function cnpj(v) {
-        // Remove tudo o que não é dígito
-        v = v.replace(/\D/g, "")                           
+    //     return v
+    // }
 
-        // Coloca ponto entre o segundo e o terceiro dígitos
-        v = v.replace(/^(\d{2})(\d)/, "$1.$2")             
-        
-        // Coloca ponto entre o quinto e o sexto dígitos
-        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") 
-        
-        // Coloca uma barra entre o oitavo e o nono dígitos
-        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2")           
+    // function cnpj(v) {
+    //     // Remove tudo o que não é dígito
+    //     v = v.replace(/\D/g, "")                           
 
-        // Coloca um hífen depois do bloco de quatro dígitos
-        v = v.replace(/(\d{4})(\d)/, "$1-$2")              
-        
-        return v
-    }
+    //     // Coloca ponto entre o segundo e o terceiro dígitos
+    //     v = v.replace(/^(\d{2})(\d)/, "$1.$2")             
+
+    //     // Coloca ponto entre o quinto e o sexto dígitos
+    //     v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") 
+
+    //     // Coloca uma barra entre o oitavo e o nono dígitos
+    //     v = v.replace(/\.(\d{3})(\d)/, ".$1/$2")           
+
+    //     // Coloca um hífen depois do bloco de quatro dígitos
+    //     v = v.replace(/(\d{4})(\d)/, "$1-$2")              
+
+    //     return v
+    // }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -247,7 +246,7 @@ const ClientesLista = () => {
                                             </button>
                                             <button
                                                 className="text-red-600 hover:text-red-900"
-                                                onClick={() => handleDelete(cliente.codigo, cliente.razao_social)}
+                                                onClick={() => handleDelete(cliente.CODIGO, cliente.NOME)}
                                             >
                                                 <FaTrash />
                                             </button>
@@ -274,7 +273,7 @@ const ClientesLista = () => {
                     disabled={paginaAtual === 1}
                     style={{
                         background: 'linear-gradient(145deg, #3b82f6, #2563eb)',
-                        boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.1)'
+                        boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(58, 27, 27, 0.1)'
                     }}
                 >
                     Anterior
@@ -293,13 +292,11 @@ const ClientesLista = () => {
             </div>
             <ConfirmationModal
                 isOpen={modalOpen}
-                onClose={() => {
-                    setModalOpen(false)
-                    setClienteParaExcluir(null)
-                }}
+                onClose={() => setModalOpen(false)}
                 onConfirm={confirmarExclusao}
                 title="Confirmar Exclusão"
-                message={`Excluir cliente: "${clienteParaExcluir?.razaoSocial}" ?`}
+                message={<>Deseja realmente excluir o cliente:<br /><span className="font-semibold">{clienteParaExcluir?.nome}</span></>}
+                type="tpWarning"
             />
         </div>
     )

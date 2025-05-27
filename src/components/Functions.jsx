@@ -54,6 +54,9 @@ function cpf(v) {
   if (!v) return ""
   v = v.replace(/\D/g, "")  // Remove tudo o que não é dígito
   
+  // Limita a 11 dígitos
+  v = v.slice(0, 11)
+  
   // Valida o CPF antes de formatar
   if (v.length === 11 && !validaCPF(v)) {
     return "CPF inválido"
@@ -81,4 +84,26 @@ function cnpj(v) {
   return v
 }
 
-export { cpf, cnpj }
+async function buscaCEP(cep) {
+  try {
+    const cepLimpo = cep.replace(/\D/g, '')
+    if (cepLimpo.length !== 8) return null
+
+    const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+    const data = await response.json()
+
+    if (data.erro) return null
+
+    return {
+      endereco: data.logradouro,
+      bairro: data.bairro,
+      cidade: data.localidade,
+      estado: data.uf
+    }
+  } catch (error) {
+    console.error('Erro ao buscar CEP:', error)
+    return null
+  }
+}
+
+export { cpf, cnpj, buscaCEP }
