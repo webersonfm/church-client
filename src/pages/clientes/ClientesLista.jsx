@@ -294,9 +294,10 @@ const ClientesLista = () => {
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onConfirm={confirmarExclusao}
-                title="Confirmar Exclusão"
-                message={<>Deseja realmente excluir o cliente:<br /><span className="font-semibold">{clienteParaExcluir?.nome}</span></>}
-                type="tpWarning"
+                title="Excluir este Registro ?"
+                // message={<>Deseja realmente excluir o cliente:<br /><span className="font-semibold">{clienteParaExcluir?.nome}</span></>}
+                message={<><span className="font-semibold">{clienteParaExcluir?.nome}</span></>}
+                type="tpDelete"
             />
         </div>
     )

@@ -1,6 +1,6 @@
 "use client"
 
-import { FaExclamationTriangle, FaCheck, FaTimes, FaInfoCircle } from "react-icons/fa"
+import { FaExclamationTriangle, FaCheck, FaTimes, FaInfoCircle, FaTrash } from "react-icons/fa"
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 'tpConfirm' }) => {
   if (!isOpen) return null
@@ -24,7 +24,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 
     },
     tpDelete: {
       gradient: "linear-gradient(135deg, #EF4444, #DC2626)",
-      icon: <FaExclamationTriangle className="text-2xl text-white" />,
+      icon: <FaTrash className="text-2xl text-white" />,
       buttonBg: "bg-red-500 hover:bg-red-600",
       buttonShadow: "0 4px 6px -1px rgba(220, 38, 38, 0.3), 0 2px 4px -1px rgba(220, 38, 38, 0.2)",
       confirmText: "Deletar",
@@ -36,8 +36,8 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
-        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-all duration-300" 
+      <div
+        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-all duration-300"
         onClick={onClose}
         style={{
           animation: "fadeIn 0.3s ease-out"
@@ -54,16 +54,16 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 
         }}
       >
         <div 
-          className="px-6 py-4 flex items-center"
+          className="px-6 py-4 relative"
           style={{
             background: currentStyle.gradient,
             boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
           }}
         >
-          <div className="bg-white/20 p-2 rounded-lg mr-3">
+          <div className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 p-2 rounded-lg">
             {currentStyle.icon}
           </div>
-          <h3 className="text-xl font-semibold text-white">{title || "Confirmação"}</h3>
+          <h3 className="text-xl font-semibold text-white text-center w-full">{title || "Confirmação"}</h3>
         </div>
 
         <div className="p-8 bg-gradient-to-b from-gray-50 to-white">
@@ -80,7 +80,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 
                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <FaTimes className="mr-2 group-hover:scale-110 transition-transform duration-300" /> 
+              <FaTimes className="mr-2 group-hover:scale-110 transition-transform duration-300" />
               Cancelar
             </button>
           )}
@@ -92,7 +92,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, type = 
               boxShadow: currentStyle.buttonShadow,
             }}
           >
-            <FaCheck className="mr-2 group-hover:scale-110 transition-transform duration-300" /> 
+            <FaCheck className="mr-2 group-hover:scale-110 transition-transform duration-300" />
             {currentStyle.confirmText}
           </button>
         </div>
